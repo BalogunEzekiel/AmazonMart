@@ -33,6 +33,7 @@ if choice == "View Products":
 
 elif choice == "Place Order":
     st.subheader("🛒 Place New Order")
+    conn = None  # Declare conn before try block
     try:
         conn = get_connection()
         cur = conn.cursor()
@@ -69,6 +70,7 @@ elif choice == "Place Order":
 
 elif choice == "Order History":
     st.subheader("📜 Order History")
+    conn = None  # Ensure conn is always defined
     try:
         conn = get_connection()
         query = """
