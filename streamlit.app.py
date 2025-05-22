@@ -20,6 +20,7 @@ choice = st.sidebar.selectbox("Navigation", menu)
 
 if choice == "View Products":
     st.subheader("Available Products")
+    conn = None  # Initialize connection variable
     try:
         conn = get_connection()
         df = pd.read_sql("SELECT * FROM products ORDER BY productid", conn)
@@ -27,7 +28,8 @@ if choice == "View Products":
     except Exception as e:
         st.error(f"Error loading products: {e}")
     finally:
-        conn.close()
+        if conn:
+            conn.close()
 
 elif choice == "Place Order":
     st.subheader("🛒 Place New Order")
