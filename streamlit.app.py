@@ -6,12 +6,12 @@ from datetime import datetime
 # Database connection setup
 def get_connection():
     return psycopg2.connect(
-        host="localhost",
-        database="amazonmart",
-        user="postgres",
-        password="Hephzibah@1414"
+        host=st.secrets["postgres"]["host"],
+        database=st.secrets["postgres"]["database"],
+        user=st.secrets["postgres"]["user"],
+        password=st.secrets["postgres"]["password"]
     )
-
+    
 # App title
 st.title("📦 AmazonMart Order Management")
 
