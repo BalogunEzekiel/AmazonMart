@@ -64,7 +64,8 @@ elif choice == "Place Order":
     except Exception as e:
         st.error(f"Error placing order: {e}")
     finally:
-        conn.close()
+        if conn:
+            conn.close()
 
 elif choice == "Order History":
     st.subheader("📜 Order History")
@@ -84,4 +85,5 @@ elif choice == "Order History":
     except Exception as e:
         st.error(f"Error fetching order history: {e}")
     finally:
-        conn.close()
+        if conn:
+            conn.close()
