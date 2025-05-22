@@ -7,6 +7,7 @@ from datetime import datetime
 def get_connection():
     return psycopg2.connect(
         host="localhost",
+        port=5432,
         database="amazonmart",
         user="postgres",
         password="Hephzibah@1414"
