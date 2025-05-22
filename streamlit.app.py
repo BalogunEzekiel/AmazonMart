@@ -8,8 +8,8 @@ def get_connection():
     return psycopg2.connect(
         host="localhost",
         database="amazonmart",
-        user="your_username",
-        password="your_password"
+        user="postgres",
+        password="Hephzibah@1414"
     )
 
 # App title
