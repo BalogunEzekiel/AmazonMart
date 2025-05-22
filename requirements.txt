@@ -1,7 +1,4 @@
-streamlit
-psycopg2-binary
 pandas
 datetime
 streamlit==1.45.1
 psycopg2-binary==2.9.9
-pandas
