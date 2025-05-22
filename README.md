@@ -1,6 +1,6 @@
 # 📦 AmazonMart
 
-## Streamlit E-Commerce Order Management App
+## E-Commerce Order Management App
 
 AmazonMart is an Amazon-like e-commerce simulation application built with Streamlit and PostgreSQL. It features a comprehensive order management system allowing users to browse products, manage customers, place multi-product orders with stock validation, process payments, track shipping, and handle product returns—all mimicking real-world e-commerce workflows.
 
