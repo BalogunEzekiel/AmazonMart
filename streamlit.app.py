@@ -4,19 +4,20 @@ import pandas as pd
 from datetime import datetime
 
 # Initialize connection only once
-@st.experimental_singleton
+# Use cache_resource to cache the DB connection
+@st.cache_resource
 def init_connection():
     return psycopg2.connect(**st.secrets["postgres"])
 
 conn = init_connection()
 
-# Cached query function
-@st.experimental_memo(ttl=600)
+# Use cache_data to cache query results
+@st.cache_data(ttl=600)
 def run_query(query):
     with conn.cursor() as cur:
         cur.execute(query)
         return cur.fetchall()
-
+        
 # App title
 st.title("📦 AmazonMart Order Management")
 
