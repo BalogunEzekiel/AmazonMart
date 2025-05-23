@@ -4,14 +4,24 @@ import psycopg2
 import pandas as pd
 
 # Database connection setup using provided details
-def get_connection():
-    return psycopg2.connect(
-        host="localhost",
-        port="5432",
-        database="amazonmart",
-        user="postgres",
-        password="Hephzibah@1414"
-    )
+# def get_connection():
+#    return psycopg2.connect(
+#        host="localhost",
+#        port="5432",
+#        database="amazonmart",
+#        user="postgres",
+#        password="Hephzibah@1414"
+#    )
+
+# Initialize connection.
+conn = st.connection("postgresql", type="sql")
+
+# Perform query.
+df = conn.query('SELECT * FROM mytable;', ttl="10m")
+
+# Print results.
+for row in df.itertuples():
+    st.write(f"{row.name} has a :{row.pet}:")
 
 # Streamlit App Title
 st.title("📦 AmazonMart Order Management")
