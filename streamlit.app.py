@@ -3,43 +3,41 @@ import psycopg2
 import pandas as pd
 from datetime import datetime
 
-# Database connection setup
-def get_connection():
-    return psycopg2.connect(
-        host="localhost",
-        port=5432,
-        database="amazonmart",
-        user="postgres",
-        password="Hephzibah@1414"
-    )
+# Initialize connection only once
+@st.experimental_singleton
+def init_connection():
+    return psycopg2.connect(**st.secrets["postgres"])
+
+conn = init_connection()
+
+# Cached query function
+@st.experimental_memo(ttl=600)
+def run_query(query):
+    with conn.cursor() as cur:
+        cur.execute(query)
+        return cur.fetchall()
 
 # App title
 st.title("📦 AmazonMart Order Management")
 
+# Sidebar navigation
 menu = ["View Products", "Place Order", "Order History"]
 choice = st.sidebar.selectbox("Navigation", menu)
 
 if choice == "View Products":
     st.subheader("Available Products")
-    conn = None  # ✅ Declare before try
     try:
-        conn = get_connection()
         df = pd.read_sql("SELECT * FROM products ORDER BY productid", conn)
         st.dataframe(df)
     except Exception as e:
         st.error(f"Error loading products: {e}")
-    finally:
-        if conn:  # ✅ Only close if connection succeeded
-            conn.close()
 
 elif choice == "Place Order":
     st.subheader("🛒 Place New Order")
-    conn = None  # Declare conn before try block
     try:
-        conn = get_connection()
         cur = conn.cursor()
 
-        # Get customers and products
+        # Fetch customer and product data
         cur.execute("SELECT customerid, firstname || ' ' || lastname FROM customers")
         customers = cur.fetchall()
         customer_map = {f"{name} (ID: {cid})": cid for cid, name in customers}
@@ -56,24 +54,19 @@ elif choice == "Place Order":
             quantities.append(qty)
 
         if st.button("Place Order"):
-            if selected_products and quantities:
+            if selected_products and all(qty > 0 for qty in quantities):
                 product_ids = [product_map[p] for p in selected_products]
                 cur.callproc('PlaceMultiProductOrder', [customer_map[customer_choice], product_ids, quantities])
                 conn.commit()
                 st.success("Order placed successfully!")
             else:
-                st.warning("Please select at least one product and specify quantities.")
+                st.warning("Please select at least one product and specify valid quantities.")
     except Exception as e:
         st.error(f"Error placing order: {e}")
-    finally:
-        if conn:
-            conn.close()
 
 elif choice == "Order History":
     st.subheader("📜 Order History")
-    conn = None  # Ensure conn is always defined
     try:
-        conn = get_connection()
         query = """
             SELECT o.orderid, c.firstname || ' ' || c.lastname AS customer, o.orderdate, o.totalamount,
                    p.productname, od.quantity, od.subtotal
@@ -87,6 +80,3 @@ elif choice == "Order History":
         st.dataframe(df)
     except Exception as e:
         st.error(f"Error fetching order history: {e}")
-    finally:
-        if conn:
-            conn.close()
