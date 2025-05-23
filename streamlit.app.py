@@ -13,17 +13,6 @@ def get_connection():
         password="Hephzibah@1414"
     )
 
-# Load customer data
-def load_customers():
-    conn = get_connection()
-    df = pd.read_sql("SELECT * FROM customers", conn)
-    conn.close()
-    return df
-
-st.subheader("👤 Customer List")
-customers_df = load_customers()
-st.dataframe(customers_df)
-
 # App title
 st.title("📦 AmazonMart Order Management")
 
