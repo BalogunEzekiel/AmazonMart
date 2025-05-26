@@ -13,7 +13,8 @@ db_name = "amazonmart"
 # Properly encode special characters in the password (like @)
 encoded_pass = quote_plus(db_pass)
 
-engine = create_engine(f'postgres+psycopg2://{db_user}:{encoded_pass}@{db_host}:{db_port}/{db_name}')
+engine = create_engine(f'postgresql+psycopg2://{db_user}:{encoded_pass}@{db_host}:{db_port}/{db_name}')
+# engine = create_engine(f'postgres+psycopg2://{db_user}:{encoded_pass}@{db_host}:{db_port}/{db_name}')
 
 # Create engine
 # engine = create_engine(f'postgresql+psycopg2://postgresql:Hephzibah@141@localhost:5432/amazonmart')
