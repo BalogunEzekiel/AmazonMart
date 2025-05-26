@@ -4,7 +4,7 @@ from sqlalchemy import create_engine, text
 from urllib.parse import quote_plus
 
 # PostgreSQL credentials
-db_user = "postgresql"
+db_user = "postgres"
 db_pass = "Hephzibah@1414"
 db_host = "localhost"
 db_port = "5432"
