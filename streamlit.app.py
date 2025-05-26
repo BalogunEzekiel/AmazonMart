@@ -1,6 +1,7 @@
 import streamlit as st
 import pandas as pd
 from sqlalchemy import create_engine, text
+from urllib.parse import quote_plus
 
 # PostgreSQL credentials
 db_user = "postgresql"
@@ -9,9 +10,16 @@ db_host = "localhost"
 db_port = "5432"
 db_name = "amazonmart"
 
+# Properly encode special characters in the password (like @)
+encoded_pass = quote_plus(db_pass)
+
+engine = create_engine(f'postgres+psycopg2://{db_user}:{encoded_pass}@{db_host}:{db_port}/{db_name}')
+
 # Create engine
-engine = create_engine(f'postgresql+psycopg2://postgresql:Hephzibah@1414@localhost:5432/amazonmart')
+# engine = create_engine(f'postgresql+psycopg2://postgresql:Hephzibah@141@localhost:5432/amazonmart')
 # DATABASE_URL = "postgresql://admin:secret@localhost:5432/salesdb"
+
+
 
 
 st.title("📦 AmazonMart Order Management")
