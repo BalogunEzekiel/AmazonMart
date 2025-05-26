@@ -3,14 +3,14 @@ import pandas as pd
 from sqlalchemy import create_engine, text
 
 # PostgreSQL credentials
-db_user = "postgres"
+db_user = "postgresql"
 db_pass = "Hephzibah@1414"
 db_host = "localhost"
 db_port = "5432"
 db_name = "amazonmart"
 
 # Create engine
-engine = create_engine(f'postgresql+psycopg2://{postgres}:{Hephzibah@1414}@{localhost}:{5432}/{amazonmart}')
+engine = create_engine(f'postgresql+psycopg2://{postgresql}:{Hephzibah@1414}@{localhost}:{5432}/{amazonmart}')
 
 st.title("📦 AmazonMart Order Management")
 
