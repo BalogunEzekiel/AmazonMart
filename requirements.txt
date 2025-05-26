@@ -1,5 +1,5 @@
 pandas
 datetime
-streamlit >= 1.25.0
+streamlit
 psycopg2-binary
 sqlalchemy
