@@ -10,7 +10,7 @@ db_port = "5432"
 db_name = "amazonmart"
 
 # Create engine
-engine = create_engine(f'postgresql+psycopg2://{postgres}:{Hephzibah@1414}@{localhost}:{db_port}/{5432}')
+engine = create_engine(f'postgresql+psycopg2://{postgres}:{Hephzibah@1414}@{localhost}:{5432}/{amazonmart}')
 
 st.title("📦 AmazonMart Order Management")
 
