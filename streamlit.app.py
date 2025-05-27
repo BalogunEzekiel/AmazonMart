@@ -13,12 +13,12 @@ def get_engine():
     """
     try:
         # Properly access secrets
-        db_host = st.secrets["supabase"]["host"]
-        db_port = st.secrets["supabase"]["port"]
-        db_name = st.secrets["supabase"]["database"]
-        db_user = st.secrets["supabase"]["user"]
-        db_pass = st.secrets["supabase"]["password"]
-        pool_mode = st.secrets["supabase"]["session"]
+        host = st.secrets["supabase"]["host"]
+        port = st.secrets["supabase"]["port"]
+        database = st.secrets["supabase"]["database"]
+        user = st.secrets["supabase"]["user"]
+        password = st.secrets["supabase"]["password"]
+        pool_mode = st.secrets["supabase"]["pool_mode"]
 
         # URL-encode the password in case it contains special characters
         encoded_db_pass = quote_plus(db_pass)
