@@ -3,3 +3,4 @@ datetime
 streamlit
 psycopg2-binary
 sqlalchemy
+urllib.parse
