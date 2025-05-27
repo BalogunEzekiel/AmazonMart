@@ -4,7 +4,7 @@ from sqlalchemy import create_engine, text
 from urllib.parse import quote_plus
 
 host = "db.fbkriebmhjectmlyrems.supabase.co"
-port = "5432"
+port = 5432
 database = "postgres"
 user = "postgres"
 password = "Hephzibah@1414"
