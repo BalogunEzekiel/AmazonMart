@@ -3,7 +3,8 @@ import pandas as pd
 from sqlalchemy import create_engine, text
 from urllib.parse import quote_plus
 
-host = "db.fbkriebmhjectmlyrems.supabase.co"
+# host = "db.fbkriebmhjectmlyrems.supabase.co"
+host = "[2a05:d01c:30c:9d0a:e2ac:a041:2c36:98fe]"
 port = 5432
 database = "postgres"
 user = "postgres"
@@ -21,7 +22,7 @@ encoded_pass = quote_plus(password)
 
 # postgresql://postgres:encoded_pass@db.fbkriebmhjectmlyrems.supabase.co:5432/postgres
 
-engine = create_engine(f'postgresql+psycopg2://{user}:{encoded_pass}@{host}:{port}/{database}')
+engine = create_engine(f'postgresql+psycopg2://{user}:{encoded_pass}@[{host}]:{port}/{database}')
 # engine = create_engine(f'postgres+psycopg2://{db_user}:{encoded_pass}@{db_host}:{db_port}/{db_name}')
 
 # Create engine
