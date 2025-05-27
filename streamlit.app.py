@@ -2,20 +2,33 @@ import pandas as pd
 import streamlit as st
 from sqlalchemy import create_engine, text
 from urllib.parse import quote_plus
+import psycopg2
 
-# Supabase Session Pooler connection info
-host = "aws-0-eu-west-2.pooler.supabase.com"
-port = 5432
-database = "postgres"
-user = "postgres.fbkriebmhjectmlyrems"  # pooler user with suffix
-password = "Hephzibah@1414"
+DB_HOST = "your-db-host.supabase.co"
+DB_PORT = "5432"
+DB_NAME = "your-db-name"
+DB_USER = "your-db-user"
+DB_PASS = "your-db-password"
 
-encoded_pass = quote_plus(password)
+@st.cache_resource
+def get_connection():
+    return psycopg2.connect(
+        host=secrets(host),
+        port=secrets(port),
+        database=secrets(database),
+        user=secrets(user),
+        password=secrets(password),
+        sslmode='require'
+    )
 
-# Create SQLAlchemy engine with SSL required for Supabase
-engine = create_engine(
-    f'postgresql+psycopg2://{user}:{encoded_pass}@{host}:{port}/{database}?sslmode=require'
-)
+def run_query(query):
+    conn = get_connection()
+    cur = conn.cursor()
+    cur.execute(query)
+    results = cur.fetchall()
+    cur.close()
+    conn.close()
+    return results
 
 st.title("📦 AmazonMart Order Management")
 
