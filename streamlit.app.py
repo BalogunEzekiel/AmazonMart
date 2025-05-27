@@ -18,6 +18,7 @@ def get_engine():
         db_name = st.secrets["supabase"]["database"]
         db_user = st.secrets["supabase"]["user"]
         db_pass = st.secrets["supabase"]["password"]
+        pool_size = st.secrets["supabase"]["session"]
 
         # URL-encode the password in case it contains special characters
         encoded_db_pass = quote_plus(db_pass)
