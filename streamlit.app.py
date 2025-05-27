@@ -1,20 +1,15 @@
 import streamlit as st
-import pandas as pd
-from sqlalchemy import create_engine, text
+from sqlalchemy import create_engine
 from urllib.parse import quote_plus
 
-# --- CORRECTED CONNECTION DETAILS ---
-# Retrieve these from your Supabase Project Settings -> Database
-host = "db.fbkriebmhjectmlyrems.supabase.co" # Use the hostname provided by Supabase
-port = 5432                                  # Supabase usually uses 5432 for PostgreSQL
-database = "postgres"
-user = "postgres"
-password = "Hephzibah@1414" # Make sure this is your actual database password
-
-# Properly encode special characters in the password (like @)
+# Securely retrieve from secrets
+host = st.secrets["supabase"]["host"]
+port = st.secrets["supabase"]["port"]
+database = st.secrets["supabase"]["database"]
+user = st.secrets["supabase"]["user"]
+password = st.secrets["supabase"]["password"]
 encoded_pass = quote_plus(password)
 
-# Corrected engine creation using the hostname and standard port
 engine = create_engine(f'postgresql+psycopg2://{user}:{encoded_pass}@{host}:{port}/{database}')
 
 st.title("📦 AmazonMart Order Management")
