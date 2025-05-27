@@ -21,7 +21,7 @@ def get_engine():
         pool_mode = st.secrets["supabase"]["pool_mode"]
 
         # URL-encode the password in case it contains special characters
-        encoded_db_pass = quote_plus(db_pass)
+        encoded_password = quote_plus(password)
 
         # Create the connection string
         # Using psycopg2 driver with PostgreSQL
