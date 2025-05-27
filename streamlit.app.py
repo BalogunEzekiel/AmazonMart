@@ -58,7 +58,7 @@ elif choice == "Place Order":
         with engine.connect() as conn:
             # Load customers
             customers_df = pd.read_sql(
-                "SELECT customerid, firstname || ' ' || lastname AS fullname FROM customers", conn
+                "SELECT customer_id, firstname || ' ' || lastname AS fullname FROM customers", conn
             )
             customer_map = {
                 f"{row.fullname} (ID: {row.customerid})": row.customerid for row in customers_df.itertuples()
