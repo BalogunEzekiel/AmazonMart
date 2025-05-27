@@ -2,43 +2,43 @@ import pandas as pd
 import streamlit as st
 from sqlalchemy import create_engine, text
 from urllib.parse import quote_plus
-import psycopg2
 
 # --- Database Connection ---
 @st.cache_resource
 def get_engine():
     """
-    Establishes and caches a SQLAlchemy engine for database interaction.
-    Uses Streamlit's secrets management for secure credentials.
+    Create and cache SQLAlchemy engine with SSL enforced.
     """
     try:
-        # Properly access secrets
         host = st.secrets["supabase"]["host"]
         port = st.secrets["supabase"]["port"]
         database = st.secrets["supabase"]["database"]
         user = st.secrets["supabase"]["user"]
         password = st.secrets["supabase"]["password"]
-        pool_mode = st.secrets["supabase"]["pool_mode"]
 
-        # URL-encode the password in case it contains special characters
+        # URL-encode password to handle special characters
         encoded_password = quote_plus(password)
 
-        # Create the connection string
-        # Using psycopg2 driver with PostgreSQL
-        DATABASE_URL = f"postgresql+psycopg2://{user}:{encoded_password}@{host}:{port}/{database}"
-        engine = create_engine(DATABASE_URL, connect_args={'sslmode': 'require'})
-        return engine
-    except KeyError as e:
-        st.error(f"Missing Streamlit secret: {e}. Please ensure your `secrets.toml` is configured correctly.")
-        st.stop() # Stop the app if secrets are missing
-    except Exception as e:
-        st.error(f"Error connecting to the database: {e}")
-        st.stop() # Stop the app if connection fails
+        # Build connection string with sslmode=require
+        DATABASE_URL = (
+            f"postgresql+psycopg2://{user}:{encoded_password}@host}:{port}/{database}"
+            "?sslmode=require"
+        )
 
-# Initialize the engine once
+        engine = create_engine(DATABASE_URL)
+        return engine
+
+    except KeyError as e:
+        st.error(f"Missing secret key: {e}")
+        st.stop()
+    except Exception as e:
+        st.error(f"Database connection error: {e}")
+        st.stop()
+
+# Initialize engine
 engine = get_engine()
 
-# --- Streamlit App ---
+# --- Streamlit UI ---
 st.title("📦 AmazonMart Order Management")
 
 menu = ["View Products", "Place Order", "Order History"]
@@ -84,7 +84,7 @@ elif choice == "Place Order":
                     customer_id = customer_map[customer_choice]
                     product_ids = [product_map[p] for p in selected_products]
 
-                    with conn.begin() as trans: # Use conn.begin() for transactions
+                    with conn.begin() as trans:  # Start transaction
                         conn.execute(
                             text(
                                 "CALL PlaceMultiProductOrder(:cust_id, :prod_ids::INTEGER[], :qtys::INTEGER[])"
