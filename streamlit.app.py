@@ -5,7 +5,7 @@ from urllib.parse import quote_plus
 
 # host = "[db.fbkriebmhjectmlyrems.supabase.co]"
 host = "2a05:d01c:30c:9d0a:e2ac:a041:2c36:98fe"
-port = 5432
+port = 6543
 database = "postgres"
 user = "postgres"
 password = "Hephzibah@1414"
