@@ -1,17 +1,21 @@
 import pandas as pd
 import streamlit as st
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, text
 from urllib.parse import quote_plus
 
-host = "db.fbkriebmhjectmlyrems.supabase.co"  # No brackets here
+# Supabase Session Pooler connection info
+host = "aws-0-eu-west-2.pooler.supabase.com"
 port = 5432
 database = "postgres"
-user = "postgres"
+user = "postgres.fbkriebmhjectmlyrems"  # pooler user with suffix
 password = "Hephzibah@1414"
 
 encoded_pass = quote_plus(password)
 
-engine = create_engine(f'postgresql+psycopg2://{user}:{encoded_pass}@{host}:{port}/{database}')
+# Create SQLAlchemy engine with SSL required for Supabase
+engine = create_engine(
+    f'postgresql+psycopg2://{user}:{encoded_pass}@{host}:{port}/{database}?sslmode=require'
+)
 
 st.title("📦 AmazonMart Order Management")
 
@@ -31,14 +35,20 @@ elif choice == "Place Order":
     try:
         with engine.connect() as conn:
             # Load customers
-            customers_df = pd.read_sql("SELECT customerid, firstname || ' ' || lastname AS fullname FROM customers", conn)
-            customer_map = {f"{row.fullname} (ID: {row.customerid})": row.customerid for row in customers_df.itertuples()}
+            customers_df = pd.read_sql(
+                "SELECT customerid, firstname || ' ' || lastname AS fullname FROM customers", conn
+            )
+            customer_map = {
+                f"{row.fullname} (ID: {row.customerid})": row.customerid for row in customers_df.itertuples()
+            }
 
             customer_choice = st.selectbox("Select Customer", list(customer_map.keys()))
 
             # Load products
             products_df = pd.read_sql("SELECT productid, productname FROM products", conn)
-            product_map = {f"{row.productname} (ID: {row.productid})": row.productid for row in products_df.itertuples()}
+            product_map = {
+                f"{row.productname} (ID: {row.productid})": row.productid for row in products_df.itertuples()
+            }
 
             selected_products = st.multiselect("Select Products", list(product_map.keys()))
             quantities = []
@@ -50,16 +60,17 @@ elif choice == "Place Order":
                 if selected_products and quantities:
                     customer_id = customer_map[customer_choice]
                     product_ids = [product_map[p] for p in selected_products]
-                    
-                    # Convert product_ids and quantities to PostgreSQL arrays
+
                     with engine.begin() as trans:
                         conn.execute(
-                            text("CALL PlaceMultiProductOrder(:cust_id, :prod_ids::INTEGER[], :qtys::INTEGER[])"),
+                            text(
+                                "CALL PlaceMultiProductOrder(:cust_id, :prod_ids::INTEGER[], :qtys::INTEGER[])"
+                            ),
                             {
                                 "cust_id": customer_id,
                                 "prod_ids": product_ids,
-                                "qtys": quantities
-                            }
+                                "qtys": quantities,
+                            },
                         )
                     st.success("Order placed successfully!")
                 else:
