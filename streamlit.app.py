@@ -61,15 +61,15 @@ elif choice == "Place Order":
                 "SELECT customer_id, name AS fullname FROM customers", conn
             )
             customer_map = {
-                f"{row.fullname} (ID: {row.customerid})": row.customerid for row in customers_df.itertuples()
+                f"{row.fullname} (ID: {row.customer_id})": row.customer_id for row in customers_df.itertuples()
             }
 
             customer_choice = st.selectbox("Select Customer", list(customer_map.keys()))
 
             # Load products
-            products_df = pd.read_sql("SELECT productid, productname FROM products", conn)
+            products_df = pd.read_sql("SELECT product_id, name FROM products", conn)
             product_map = {
-                f"{row.productname} (ID: {row.productid})": row.productid for row in products_df.itertuples()
+                f"{row.name} (ID: {row.product_id})": row.product_id for row in products_df.itertuples()
             }
 
             selected_products = st.multiselect("Select Products", list(product_map.keys()))
@@ -104,13 +104,13 @@ elif choice == "Order History":
     st.subheader("📜 Order History")
     try:
         query = """
-            SELECT o.orderid, c.firstname || ' ' || c.lastname AS customer, o.orderdate, o.totalamount,
+            SELECT o.order_id, c.name AS customer, o.order_date, o.totalamount,
                    p.productname, od.quantity, od.subtotal
             FROM orders o
-            JOIN customers c ON o.customerid = c.customerid
-            JOIN orderdetails od ON o.orderid = od.orderid
-            JOIN products p ON od.productid = p.productid
-            ORDER BY o.orderdate DESC
+            JOIN customers c ON o.customer_id = c.customer_id
+            JOIN orderdetails od ON o.order_id = od.order_id
+            JOIN products p ON od.product_id = p.product_id
+            ORDER BY o.order_date DESC
         """
         with engine.connect() as conn:
             df = pd.read_sql(query, conn)
