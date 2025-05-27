@@ -2,12 +2,12 @@ import streamlit as st
 from sqlalchemy import create_engine
 from urllib.parse import quote_plus
 
-# Securely retrieve from secrets
-host = st.secrets["supabase"]["host"]
-port = st.secrets["supabase"]["port"]
-database = st.secrets["supabase"]["database"]
-user = st.secrets["supabase"]["user"]
-password = st.secrets["supabase"]["password"]
+host = "db.fbkriebmhjectmlyrems.supabase.co"  # No brackets here
+port = 5432
+database = "postgres"
+user = "postgres"
+password = "Hephzibah@1414"
+
 encoded_pass = quote_plus(password)
 
 engine = create_engine(f'postgresql+psycopg2://{user}:{encoded_pass}@{host}:{port}/{database}')
