@@ -20,8 +20,7 @@ def get_engine():
         encoded_password = quote_plus(password)
 
         # Build connection string with sslmode=require
-        DATABASE_URL = (
-            f"postgresql+psycopg2://{user}:{encoded_password}@host}:{port}/{database}"
+        DATABASE_URL = (f"postgresql+psycopg2://{user}:{encoded_password}@{host}:{port}/{database}"
             "?sslmode=require"
         )
 
