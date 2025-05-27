@@ -4,32 +4,40 @@ from sqlalchemy import create_engine, text
 from urllib.parse import quote_plus
 import psycopg2
 
-DB_HOST = "your-db-host.supabase.co"
-DB_PORT = "5432"
-DB_NAME = "your-db-name"
-DB_USER = "your-db-user"
-DB_PASS = "your-db-password"
-
+# --- Database Connection ---
 @st.cache_resource
-def get_connection():
-    return psycopg2.connect(
-        host=secrets(host),
-        port=secrets(port),
-        database=secrets(database),
-        user=secrets(user),
-        password=secrets(password),
-        sslmode='require'
-    )
+def get_engine():
+    """
+    Establishes and caches a SQLAlchemy engine for database interaction.
+    Uses Streamlit's secrets management for secure credentials.
+    """
+    try:
+        # Properly access secrets
+        db_host = st.secrets["supabase"]["host"]
+        db_port = st.secrets["supabase"]["port"]
+        db_name = st.secrets["supabase"]["database"]
+        db_user = st.secrets["supabase"]["user"]
+        db_pass = st.secrets["supabase"]["password"]
 
-def run_query(query):
-    conn = get_connection()
-    cur = conn.cursor()
-    cur.execute(query)
-    results = cur.fetchall()
-    cur.close()
-    conn.close()
-    return results
+        # URL-encode the password in case it contains special characters
+        encoded_db_pass = quote_plus(db_pass)
 
+        # Create the connection string
+        # Using psycopg2 driver with PostgreSQL
+        DATABASE_URL = f"postgresql+psycopg2://{db_user}:{encoded_db_pass}@{db_host}:{db_port}/{db_name}"
+        engine = create_engine(DATABASE_URL, connect_args={'sslmode': 'require'})
+        return engine
+    except KeyError as e:
+        st.error(f"Missing Streamlit secret: {e}. Please ensure your `secrets.toml` is configured correctly.")
+        st.stop() # Stop the app if secrets are missing
+    except Exception as e:
+        st.error(f"Error connecting to the database: {e}")
+        st.stop() # Stop the app if connection fails
+
+# Initialize the engine once
+engine = get_engine()
+
+# --- Streamlit App ---
 st.title("📦 AmazonMart Order Management")
 
 menu = ["View Products", "Place Order", "Order History"]
@@ -38,8 +46,9 @@ choice = st.sidebar.selectbox("Navigation", menu)
 if choice == "View Products":
     st.subheader("Available Products")
     try:
-        df = pd.read_sql("SELECT * FROM products", engine)
-        st.dataframe(df)
+        with engine.connect() as conn:
+            df = pd.read_sql("SELECT * FROM products", conn)
+            st.dataframe(df)
     except Exception as e:
         st.error(f"Error loading products: {e}")
 
@@ -74,7 +83,7 @@ elif choice == "Place Order":
                     customer_id = customer_map[customer_choice]
                     product_ids = [product_map[p] for p in selected_products]
 
-                    with engine.begin() as trans:
+                    with conn.begin() as trans: # Use conn.begin() for transactions
                         conn.execute(
                             text(
                                 "CALL PlaceMultiProductOrder(:cust_id, :prod_ids::INTEGER[], :qtys::INTEGER[])"
@@ -103,7 +112,8 @@ elif choice == "Order History":
             JOIN products p ON od.productid = p.productid
             ORDER BY o.orderdate DESC
         """
-        df = pd.read_sql(query, engine)
-        st.dataframe(df)
+        with engine.connect() as conn:
+            df = pd.read_sql(query, conn)
+            st.dataframe(df)
     except Exception as e:
         st.error(f"Error fetching order history: {e}")
