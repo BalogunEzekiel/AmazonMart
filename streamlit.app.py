@@ -3,17 +3,25 @@ import pandas as pd
 from sqlalchemy import create_engine, text
 from urllib.parse import quote_plus
 
+host = "db.fbkriebmhjectmlyrems.supabase.co"
+port = "5432"
+database = "postgres"
+user = "postgres"
+password = "Hephzibah@1414"
+
 # PostgreSQL credentials
-db_user = "postgres"
-db_pass = "Hephzibah@1414"
-db_host = "localhost"
-db_port = "5432"
-db_name = "amazonmart"
+# db_user = "postgres"
+# db_pass = "Hephzibah@1414"
+# db_host = "localhost"
+# db_port = "5432"
+# db_name = "amazonmart"
 
 # Properly encode special characters in the password (like @)
-encoded_pass = quote_plus(db_pass)
+encoded_pass = quote_plus(password)
 
-engine = create_engine(f'postgresql+psycopg2://{db_user}:{encoded_pass}@{db_host}:{db_port}/{db_name}')
+# postgresql://postgres:encoded_pass@db.fbkriebmhjectmlyrems.supabase.co:5432/postgres
+
+engine = create_engine(f'postgresql+psycopg2://{user}:{encoded_pass}@{host}:{port}/{database}')
 # engine = create_engine(f'postgres+psycopg2://{db_user}:{encoded_pass}@{db_host}:{db_port}/{db_name}')
 
 # Create engine
@@ -64,7 +72,7 @@ elif choice == "Place Order":
                     # Convert product_ids and quantities to PostgreSQL arrays
                     with engine.begin() as trans:
                         conn.execute(
-                            text("CALL PlaceMultiProductOrder(:cust_id, :prod_ids, :qtys)"),
+                            text("CALL PlaceMultiProductOrder(:cust_id, :prod_ids::INTEGER[], :qtys::INTEGER[])"),
                             {
                                 "cust_id": customer_id,
                                 "prod_ids": product_ids,
