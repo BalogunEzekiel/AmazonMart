@@ -3,34 +3,19 @@ import pandas as pd
 from sqlalchemy import create_engine, text
 from urllib.parse import quote_plus
 
-# host = "[db.fbkriebmhjectmlyrems.supabase.co]"
-host = "2a05:d01c:30c:9d0a:e2ac:a041:2c36:98fe"
-port = 6543
+# --- CORRECTED CONNECTION DETAILS ---
+# Retrieve these from your Supabase Project Settings -> Database
+host = "db.fbkriebmhjectmlyrems.supabase.co" # Use the hostname provided by Supabase
+port = 5432                                  # Supabase usually uses 5432 for PostgreSQL
 database = "postgres"
 user = "postgres"
-password = "Hephzibah@1414"
-
-# PostgreSQL credentials
-# db_user = "postgres"
-# db_pass = "Hephzibah@1414"
-# db_host = "localhost"
-# db_port = "5432"
-# db_name = "amazonmart"
+password = "Hephzibah@1414" # Make sure this is your actual database password
 
 # Properly encode special characters in the password (like @)
 encoded_pass = quote_plus(password)
 
-# postgresql://postgres:encoded_pass@db.fbkriebmhjectmlyrems.supabase.co:5432/postgres
-
-engine = create_engine(f'postgresql+psycopg2://{user}:{encoded_pass}@[{host}]:{port}/{database}')
-# engine = create_engine(f'postgres+psycopg2://{db_user}:{encoded_pass}@{db_host}:{db_port}/{db_name}')
-
-# Create engine
-# engine = create_engine(f'postgresql+psycopg2://postgresql:Hephzibah@141@localhost:5432/amazonmart')
-# DATABASE_URL = "postgresql://admin:secret@localhost:5432/salesdb"
-
-
-
+# Corrected engine creation using the hostname and standard port
+engine = create_engine(f'postgresql+psycopg2://{user}:{encoded_pass}@{host}:{port}/{database}')
 
 st.title("📦 AmazonMart Order Management")
 
