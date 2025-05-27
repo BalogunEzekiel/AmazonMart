@@ -25,7 +25,7 @@ def get_engine():
 
         # Create the connection string
         # Using psycopg2 driver with PostgreSQL
-        DATABASE_URL = f"postgresql+psycopg2://{db_user}:{encoded_db_pass}@{db_host}:{db_port}/{db_name}"
+        DATABASE_URL = f"postgresql+psycopg2://{user}:{encoded_password}@{host}:{port}/{database}"
         engine = create_engine(DATABASE_URL, connect_args={'sslmode': 'require'})
         return engine
     except KeyError as e:
