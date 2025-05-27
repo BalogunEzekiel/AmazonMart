@@ -1,3 +1,4 @@
+import pandas as pd
 import streamlit as st
 from sqlalchemy import create_engine
 from urllib.parse import quote_plus
