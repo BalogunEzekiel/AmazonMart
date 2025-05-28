@@ -58,8 +58,10 @@ if choice == "View Products":
         st.dataframe(df)
 
         csv = df.to_csv(index=False).encode('utf-8')
+        excel_data = convert_df_to_excel(df)
 
         st.download_button("Download CSV", csv, "products.csv", "text/csv")
+        st.download_button("Download Excel", excel_data, "order_history.xlsx")
 
     except Exception as e:
         st.error(f"Error loading products: {e}")
