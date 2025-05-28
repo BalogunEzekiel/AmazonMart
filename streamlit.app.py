@@ -87,8 +87,8 @@ elif choice == "Place Order":
                 try:
                     with engine.begin() as conn:
                         conn.execute(
-                            text("CALL PlaceMultiProductOrder(:cust_id, :prod_ids, :qtys)"),
-                            {"cust_id": customer_id, "prod_ids": product_ids, "qtys": quantities}
+                            text("CALL PlaceMultiProductOrder(:customer_id, :product_ids, :qtys)"),
+                            {"customer_id": customer_id, "product_ids": product_ids, "qtys": quantities}
                         )
                     st.success("✅ Order placed successfully!")
                 except Exception as e:
