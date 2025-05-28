@@ -350,7 +350,7 @@ elif choice == "Admin Panel":
             try:
                 with engine.connect() as conn:
                     payment_methods = pd.read_sql("""
-                        SELECT method, COUNT(payment_id) AS num_payments
+                        SELECT payment_method, COUNT(payment_id) AS num_payments
                         FROM payments
                         GROUP BY method
                         ORDER BY num_payments DESC
