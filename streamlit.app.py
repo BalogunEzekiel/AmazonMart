@@ -215,9 +215,9 @@ elif choice == "Admin Panel":
     # --- Placeholder Dashboard tab ---
 
     with tab3:
-    st.title("📊 Admin Dashboard")
+        st.title("📊 Admin Dashboard")
 
-    # Expandable Insight Sections
+        # Expandable Insight Sections
         with st.expander("👥 Customer Insights", expanded=False):
             try:
                 with engine.connect() as conn:
