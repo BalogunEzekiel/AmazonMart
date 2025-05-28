@@ -217,154 +217,154 @@ elif choice == "Admin Panel":
     with tab3:
     st.title("📊 Admin Dashboard")
 
-        # Expandable Insight Sections
-        with st.expander("👥 Customer Insights", expanded=False):
-            try:
-                with engine.connect() as conn:
-                    total_customers = pd.read_sql("SELECT COUNT(DISTINCT customer_id) AS total_customers FROM customers", conn)
-                    st.metric("Total Customers", total_customers['total_customers'][0])
-    
-                    by_country = pd.read_sql("""
-                        SELECT country, COUNT(customer_id) AS num_customers
-                        FROM customers
-                        GROUP BY country
-                        ORDER BY num_customers DESC
-                    """, conn)
-                    st.bar_chart(by_country.set_index("country"))
-    
-                    by_city = pd.read_sql("""
-                        SELECT city, country, COUNT(customer_id) AS num_customers
-                        FROM customers
-                        GROUP BY city, country
-                        ORDER BY num_customers DESC
-                        LIMIT 10
-                    """, conn)
-                    st.write("### 🏙️ Top 10 Cities by Customers")
-                    st.dataframe(by_city)
-    
-                    top_spenders = pd.read_sql("""
-                        SELECT
-                            c.customer_id,
-                            c.name,
-                            c.email,
-                            SUM(p.amount) AS total_spending
-                        FROM customers c
-                        JOIN orders o ON c.customer_id = o.customer_id
-                        JOIN payments p ON o.order_id = p.order_id
-                        GROUP BY c.customer_id, c.name, c.email
-                        ORDER BY total_spending DESC
-                        LIMIT 10
-                    """, conn)
-                    st.write("### 💰 Top 10 Customers by Spending")
-                    st.dataframe(top_spenders)
-    
-                    monthly_regs = pd.read_sql("""
-                        SELECT
-                            TO_CHAR(registration_date, 'YYYY-MM') AS registration_month,
-                            COUNT(customer_id) AS new_customers
-                        FROM customers
-                        GROUP BY registration_month
-                        ORDER BY registration_month
-                    """, conn)
-                    st.write("### 📅 Monthly Customer Registrations")
-                    st.line_chart(monthly_regs.set_index("registration_month"))
-    
-                    yearly_regs = pd.read_sql("""
-                        SELECT
-                            EXTRACT(YEAR FROM registration_date) AS registration_year,
-                            COUNT(customer_id) AS new_customers
-                        FROM customers
-                        GROUP BY registration_year
-                        ORDER BY registration_year
-                    """, conn)
-                    st.write("### 🗓️ Yearly Customer Registrations")
-                    st.bar_chart(yearly_regs.set_index("registration_year"))
-    
-            except Exception as e:
-                st.error(f"❌ Error loading Customer Insights: {e}")
-    
-        with st.expander("📦 Orders Analysis", expanded=False):
-            try:
-                with engine.connect() as conn:
-                    order_status = pd.read_sql("""
-                        SELECT status, COUNT(order_id) AS count
-                        FROM orders
-                        GROUP BY status
-                        ORDER BY count DESC
-                    """, conn)
-                    st.write("### 📦 Orders by Status")
-                    st.bar_chart(order_status.set_index("status"))
-    
-                    orders_by_month = pd.read_sql("""
-                        SELECT TO_CHAR(order_date, 'YYYY-MM') AS order_month, COUNT(order_id) AS num_orders
-                        FROM orders
-                        GROUP BY order_month
-                        ORDER BY order_month
-                    """, conn)
-                    st.write("### 📅 Monthly Orders")
-                    st.line_chart(orders_by_month.set_index("order_month"))
-    
-                    top_customers = pd.read_sql("""
-                        SELECT c.name, COUNT(o.order_id) AS total_orders
-                        FROM customers c
-                        JOIN orders o ON c.customer_id = o.customer_id
-                        GROUP BY c.name
-                        ORDER BY total_orders DESC
-                        LIMIT 10
-                    """, conn)
-                    st.write("### 🏆 Top 10 Customers by Orders")
-                    st.dataframe(top_customers)
-    
-            except Exception as e:
-                st.error(f"❌ Error loading Orders Analysis: {e}")
-    
-        with st.expander("🛍️ Product Analysis", expanded=False):
-            try:
-                with engine.connect() as conn:
-                    top_products = pd.read_sql("""
-                        SELECT p.name, SUM(oi.quantity) AS total_sold
-                        FROM order_items oi
-                        JOIN products p ON oi.product_id = p.product_id
-                        GROUP BY p.name
-                        ORDER BY total_sold DESC
-                        LIMIT 10
-                    """, conn)
-                    st.write("### 🛍️ Top 10 Best-Selling Products")
-                    st.dataframe(top_products)
-    
-                    category_sales = pd.read_sql("""
-                        SELECT category, SUM(oi.quantity) AS total_quantity
-                        FROM order_items oi
-                        JOIN products p ON oi.product_id = p.product_id
-                        GROUP BY category
-                        ORDER BY total_quantity DESC
-                    """, conn)
-                    st.write("### 🗂️ Sales by Product Category")
-                    st.bar_chart(category_sales.set_index("category"))
-    
-            except Exception as e:
-                st.error(f"❌ Error loading Product Analysis: {e}")
-    
-        with st.expander("💳 Payment Insights", expanded=False):
-            try:
-                with engine.connect() as conn:
-                    payment_methods = pd.read_sql("""
-                        SELECT method, COUNT(payment_id) AS num_payments
-                        FROM payments
-                        GROUP BY method
-                        ORDER BY num_payments DESC
-                    """, conn)
-                    st.write("### 💳 Payment Methods Distribution")
-                    st.bar_chart(payment_methods.set_index("method"))
-    
-                    monthly_revenue = pd.read_sql("""
-                        SELECT TO_CHAR(payment_date, 'YYYY-MM') AS pay_month, SUM(amount) AS total_revenue
-                        FROM payments
-                        GROUP BY pay_month
-                        ORDER BY pay_month
-                    """, conn)
-                    st.write("### 📈 Monthly Revenue")
-                    st.line_chart(monthly_revenue.set_index("pay_month"))
-    
-            except Exception as e:
-                st.error(f"❌ Error loading Payment Insights: {e}")
+            # Expandable Insight Sections
+            with st.expander("👥 Customer Insights", expanded=False):
+                try:
+                    with engine.connect() as conn:
+                        total_customers = pd.read_sql("SELECT COUNT(DISTINCT customer_id) AS total_customers FROM customers", conn)
+                        st.metric("Total Customers", total_customers['total_customers'][0])
+        
+                        by_country = pd.read_sql("""
+                            SELECT country, COUNT(customer_id) AS num_customers
+                            FROM customers
+                            GROUP BY country
+                            ORDER BY num_customers DESC
+                        """, conn)
+                        st.bar_chart(by_country.set_index("country"))
+        
+                        by_city = pd.read_sql("""
+                            SELECT city, country, COUNT(customer_id) AS num_customers
+                            FROM customers
+                            GROUP BY city, country
+                            ORDER BY num_customers DESC
+                            LIMIT 10
+                        """, conn)
+                        st.write("### 🏙️ Top 10 Cities by Customers")
+                        st.dataframe(by_city)
+        
+                        top_spenders = pd.read_sql("""
+                            SELECT
+                                c.customer_id,
+                                c.name,
+                                c.email,
+                                SUM(p.amount) AS total_spending
+                            FROM customers c
+                            JOIN orders o ON c.customer_id = o.customer_id
+                            JOIN payments p ON o.order_id = p.order_id
+                            GROUP BY c.customer_id, c.name, c.email
+                            ORDER BY total_spending DESC
+                            LIMIT 10
+                        """, conn)
+                        st.write("### 💰 Top 10 Customers by Spending")
+                        st.dataframe(top_spenders)
+        
+                        monthly_regs = pd.read_sql("""
+                            SELECT
+                                TO_CHAR(registration_date, 'YYYY-MM') AS registration_month,
+                                COUNT(customer_id) AS new_customers
+                            FROM customers
+                            GROUP BY registration_month
+                            ORDER BY registration_month
+                        """, conn)
+                        st.write("### 📅 Monthly Customer Registrations")
+                        st.line_chart(monthly_regs.set_index("registration_month"))
+        
+                        yearly_regs = pd.read_sql("""
+                            SELECT
+                                EXTRACT(YEAR FROM registration_date) AS registration_year,
+                                COUNT(customer_id) AS new_customers
+                            FROM customers
+                            GROUP BY registration_year
+                            ORDER BY registration_year
+                        """, conn)
+                        st.write("### 🗓️ Yearly Customer Registrations")
+                        st.bar_chart(yearly_regs.set_index("registration_year"))
+        
+                except Exception as e:
+                    st.error(f"❌ Error loading Customer Insights: {e}")
+        
+            with st.expander("📦 Orders Analysis", expanded=False):
+                try:
+                    with engine.connect() as conn:
+                        order_status = pd.read_sql("""
+                            SELECT status, COUNT(order_id) AS count
+                            FROM orders
+                            GROUP BY status
+                            ORDER BY count DESC
+                        """, conn)
+                        st.write("### 📦 Orders by Status")
+                        st.bar_chart(order_status.set_index("status"))
+        
+                        orders_by_month = pd.read_sql("""
+                            SELECT TO_CHAR(order_date, 'YYYY-MM') AS order_month, COUNT(order_id) AS num_orders
+                            FROM orders
+                            GROUP BY order_month
+                            ORDER BY order_month
+                        """, conn)
+                        st.write("### 📅 Monthly Orders")
+                        st.line_chart(orders_by_month.set_index("order_month"))
+        
+                        top_customers = pd.read_sql("""
+                            SELECT c.name, COUNT(o.order_id) AS total_orders
+                            FROM customers c
+                            JOIN orders o ON c.customer_id = o.customer_id
+                            GROUP BY c.name
+                            ORDER BY total_orders DESC
+                            LIMIT 10
+                        """, conn)
+                        st.write("### 🏆 Top 10 Customers by Orders")
+                        st.dataframe(top_customers)
+        
+                except Exception as e:
+                    st.error(f"❌ Error loading Orders Analysis: {e}")
+        
+            with st.expander("🛍️ Product Analysis", expanded=False):
+                try:
+                    with engine.connect() as conn:
+                        top_products = pd.read_sql("""
+                            SELECT p.name, SUM(oi.quantity) AS total_sold
+                            FROM order_items oi
+                            JOIN products p ON oi.product_id = p.product_id
+                            GROUP BY p.name
+                            ORDER BY total_sold DESC
+                            LIMIT 10
+                        """, conn)
+                        st.write("### 🛍️ Top 10 Best-Selling Products")
+                        st.dataframe(top_products)
+        
+                        category_sales = pd.read_sql("""
+                            SELECT category, SUM(oi.quantity) AS total_quantity
+                            FROM order_items oi
+                            JOIN products p ON oi.product_id = p.product_id
+                            GROUP BY category
+                            ORDER BY total_quantity DESC
+                        """, conn)
+                        st.write("### 🗂️ Sales by Product Category")
+                        st.bar_chart(category_sales.set_index("category"))
+        
+                except Exception as e:
+                    st.error(f"❌ Error loading Product Analysis: {e}")
+        
+            with st.expander("💳 Payment Insights", expanded=False):
+                try:
+                    with engine.connect() as conn:
+                        payment_methods = pd.read_sql("""
+                            SELECT method, COUNT(payment_id) AS num_payments
+                            FROM payments
+                            GROUP BY method
+                            ORDER BY num_payments DESC
+                        """, conn)
+                        st.write("### 💳 Payment Methods Distribution")
+                        st.bar_chart(payment_methods.set_index("method"))
+        
+                        monthly_revenue = pd.read_sql("""
+                            SELECT TO_CHAR(payment_date, 'YYYY-MM') AS pay_month, SUM(amount) AS total_revenue
+                            FROM payments
+                            GROUP BY pay_month
+                            ORDER BY pay_month
+                        """, conn)
+                        st.write("### 📈 Monthly Revenue")
+                        st.line_chart(monthly_revenue.set_index("pay_month"))
+        
+                except Exception as e:
+                    st.error(f"❌ Error loading Payment Insights: {e}")
