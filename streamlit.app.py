@@ -133,10 +133,10 @@ elif choice == "Add Product/Customer":
     # --- Add Product ---
     with tab1:
         st.text("Enter new product details")
-        product name = st.text_input("name", key="product_name")
+        product_name = st.text_input("name", key="product_name")
         category = st.text_input("category", key="product_category")
         price = st.number_input("price", min_value=0.0, step=0.01, key="product_price")
-        stock quantity = st.number_input("stock_quantity", min_value=0, step=1, key="product_stock")
+        stock_quantity = st.number_input("stock_quantity", min_value=0, step=1, key="product_stock")
        
         if st.button("Add Product"):
             try:
@@ -160,7 +160,7 @@ elif choice == "Add Product/Customer":
     # --- Add Customer ---
     with tab2:
         st.text("Enter new customer details")
-        customer name = st.text_input("name", key="customer_name")  # Changed variable name too
+        customer_name = st.text_input("name", key="customer_name")  # Changed variable name too
         email = st.text_input("email", key="customer_email")
         city = st.text_input("city", key="customer_city")
         country = st.text_input("country", key="customer_country")
