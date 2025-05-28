@@ -3,6 +3,7 @@ import streamlit as st
 from sqlalchemy import create_engine, text
 from urllib.parse import quote_plus
 from io import BytesIO
+import datetime
 
 # --- Database Connection ---
 @st.cache_resource
@@ -127,7 +128,7 @@ elif choice == "Order History":
 # --- Admin Panel ---
 elif choice == "Add Product/Customer":
     st.subheader("👨‍💼 Admin Panel")
-    tab1, tab2 = st.tabs(["Add Product", "Add Customer"])
+    tab1, tab2, tab3 = st.tabs(["Add Product", "Add Customer", "Dashboard"])
 
     with tab1:
         st.text("Enter new product details")
@@ -138,8 +139,8 @@ elif choice == "Add Product/Customer":
             try:
                 with engine.begin() as conn:
                     conn.execute(
-                        text("INSERT INTO products (name, price, stock) VALUES (:name, :price, :stock)"),
-                        {"name": name, "price": price, "stock": stock}
+                        text("INSERT INTO products (name, category, price, stock_quantity) VALUES (:name, :category, :price, :stock_quantity)"),
+                        {"name": name, "category": category, "price": price, "stock_quantity": stock_quantity}
                     )
                 st.success("✅ Product added!")
             except Exception as e:
@@ -147,9 +148,11 @@ elif choice == "Add Product/Customer":
 
     with tab2:
         st.text("Enter new customer details")
-        cname = st.text_input("Customer Name")
-        email = st.text_input("Email")
-        phone = st.text_input("Phone")
+        name = st.text_input("name")
+        email = st.text_input("email")
+        city = st.text_input("city")
+        country = st.text_input("country")
+        registration_date = st.date_input("Registration Date", value=datetime.date.today())
         if st.button("Add Customer"):
             try:
                 with engine.begin() as conn:
@@ -160,6 +163,11 @@ elif choice == "Add Product/Customer":
                 st.success("✅ Customer added!")
             except Exception as e:
                 st.error(f"❌ Error adding customer: {e}")
+
+    with tab1:
+        st.text("Data-Driven Insights")
+
+
 
 # --- Real-Time Order Tracking ---
 elif choice == "Track Orders":
