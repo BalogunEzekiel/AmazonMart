@@ -108,8 +108,8 @@ elif choice == "Order History":
                    p.name, oi.quantity, oi.unit_price
             FROM orders o
             JOIN customers c ON o.customer_id = c.customer_id
-            JOIN order_items od ON oi.order_item_id = oi.order_item_id
-            JOIN products p ON od.product_id = p.product_id
+            JOIN order_items oi ON oi.order_item_id = oi.order_item_id
+            JOIN products p ON oi.product_id = p.product_id
             ORDER BY o.order_date DESC
         """
         with engine.connect() as conn:
