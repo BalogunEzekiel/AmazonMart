@@ -192,12 +192,79 @@ elif choice == "Add Product/Customer":
             st.error(f"❌ Error loading customers: {e}")
 
     # --- Placeholder Dashboard tab ---
-    with tab3:
-        st.text("Data-Driven Insights (Coming soon)")
 
-    with tab3:
-        st.text("Data-Driven Insights")
+with tab3:
+    st.subheader("📊 Customer Insights")
 
+    try:
+        with engine.connect() as conn:
+            # 1. Total Customers
+            total_customers = pd.read_sql("SELECT COUNT(DISTINCT customer_id) AS total_customers FROM customers", conn)
+            st.metric("Total Customers", total_customers['total_customers'][0])
+
+            # 2. Customers by Country
+            by_country = pd.read_sql("""
+                SELECT country, COUNT(customer_id) AS num_customers
+                FROM customers
+                GROUP BY country
+                ORDER BY num_customers DESC
+            """, conn)
+            st.bar_chart(by_country.set_index("country"))
+
+            # 3. Top 10 Cities by Customer Count
+            by_city = pd.read_sql("""
+                SELECT city, country, COUNT(customer_id) AS num_customers
+                FROM customers
+                GROUP BY city, country
+                ORDER BY num_customers DESC
+                LIMIT 10
+            """, conn)
+            st.write("### 🏙️ Top 10 Cities by Customers")
+            st.dataframe(by_city)
+
+            # 4. Top 10 Customers by Spending
+            top_spenders = pd.read_sql("""
+                SELECT
+                    c.customer_id,
+                    c.name,
+                    c.email,
+                    SUM(p.amount) AS total_spending
+                FROM customers c
+                JOIN orders o ON c.customer_id = o.customer_id
+                JOIN payments p ON o.order_id = p.order_id
+                GROUP BY c.customer_id, c.name, c.email
+                ORDER BY total_spending DESC
+                LIMIT 10
+            """, conn)
+            st.write("### 💰 Top 10 Customers by Spending")
+            st.dataframe(top_spenders)
+
+            # 5. Monthly New Registrations
+            monthly_regs = pd.read_sql("""
+                SELECT
+                    TO_CHAR(registration_date, 'YYYY-MM') AS registration_month,
+                    COUNT(customer_id) AS new_customers
+                FROM customers
+                GROUP BY registration_month
+                ORDER BY registration_month
+            """, conn)
+            st.write("### 📅 Monthly Customer Registrations")
+            st.line_chart(monthly_regs.set_index("registration_month"))
+
+            # 6. Yearly Registrations
+            yearly_regs = pd.read_sql("""
+                SELECT
+                    EXTRACT(YEAR FROM registration_date) AS registration_year,
+                    COUNT(customer_id) AS new_customers
+                FROM customers
+                GROUP BY registration_year
+                ORDER BY registration_year
+            """, conn)
+            st.write("### 🗓️ Yearly Customer Registrations")
+            st.bar_chart(yearly_regs.set_index("registration_year"))
+
+    except Exception as e:
+        st.error(f"❌ Error loading insights: {e}")
 
 # --- Real-Time Order Tracking ---
 elif choice == "Track Orders":
