@@ -111,6 +111,7 @@ elif choice == "Order History":
             JOIN order_items oi ON oi.order_item_id = oi.order_item_id
             JOIN products p ON oi.product_id = p.product_id
             ORDER BY o.order_date DESC
+            LIMIT 20
         """
         with engine.connect() as conn:
             df = pd.read_sql(query, conn)
