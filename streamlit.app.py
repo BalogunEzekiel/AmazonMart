@@ -352,7 +352,7 @@ elif choice == "Admin Panel":
                     payment_methods = pd.read_sql("""
                         SELECT payment_method, COUNT(payment_id) AS num_payments
                         FROM payments
-                        GROUP BY method
+                        GROUP BY payment_method
                         ORDER BY num_payments DESC
                     """, conn)
                     st.write("### 💳 Payment Methods Distribution")
