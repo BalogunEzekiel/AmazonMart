@@ -130,11 +130,14 @@ elif choice == "Add Product/Customer":
     st.subheader("👨‍💼 Admin Panel")
     tab1, tab2, tab3 = st.tabs(["Add Product", "Add Customer", "Dashboard"])
 
+    # --- Add Product ---
     with tab1:
         st.text("Enter new product details")
-        name = st.text_input("Product Name")
-        price = st.number_input("Price", min_value=0.0, step=0.01)
-        stock = st.number_input("Stock Quantity", min_value=0, step=1)
+        name = st.text_input("name")
+        category = st.text_input("category")
+        price = st.number_input("price", min_value=0.0, step=0.01)
+        stock_quantity = st.number_input("stock_quantity", min_value=0, step=1)
+
         if st.button("Add Product"):
             try:
                 with engine.begin() as conn:
@@ -146,27 +149,54 @@ elif choice == "Add Product/Customer":
             except Exception as e:
                 st.error(f"❌ Error adding product: {e}")
 
+        # Display all products after insertion
+        try:
+            with engine.connect() as conn:
+                products_df = pd.read_sql(text("SELECT * FROM products ORDER BY product_id DESC"), conn)
+            st.dataframe(products_df)
+        except Exception as e:
+            st.error(f"❌ Error loading products: {e}")
+
+    # --- Add Customer ---
     with tab2:
         st.text("Enter new customer details")
         name = st.text_input("name")
         email = st.text_input("email")
         city = st.text_input("city")
         country = st.text_input("country")
-        registration_date = st.date_input("Registration Date", value=datetime.date.today())
+        registration_date = st.date_input("registration_date", value=datetime.date.today())
+
         if st.button("Add Customer"):
             try:
                 with engine.begin() as conn:
                     conn.execute(
-                        text("INSERT INTO customers (name, email, phone) VALUES (:name, :email, :phone)"),
-                        {"name": cname, "email": email, "phone": phone}
+                        text("INSERT INTO customers (name, email, city, country, registration_date) VALUES (:name, :email, :city, :country, :registration_date)"),
+                        {
+                            "name": cust_name,
+                            "email": email,
+                            "city": city,
+                            "country": country,
+                            "registration_date": registration_date
+                        }
                     )
                 st.success("✅ Customer added!")
             except Exception as e:
                 st.error(f"❌ Error adding customer: {e}")
 
-    with tab1:
-        st.text("Data-Driven Insights")
+        # Display all customers after insertion
+        try:
+            with engine.connect() as conn:
+                customers_df = pd.read_sql(text("SELECT * FROM customers ORDER BY customer_id DESC"), conn)
+            st.dataframe(customers_df)
+        except Exception as e:
+            st.error(f"❌ Error loading customers: {e}")
 
+    # --- Placeholder Dashboard tab ---
+    with tab3:
+        st.text("Data-Driven Insights (Coming soon)")
+
+    with tab3:
+        st.text("Data-Driven Insights")
 
 
 # --- Real-Time Order Tracking ---
