@@ -356,7 +356,7 @@ elif choice == "Admin Panel":
                         ORDER BY num_payments DESC
                     """, conn)
                     st.write("### 💳 Payment Methods Distribution")
-                    st.bar_chart(payment_methods.set_index("method"))
+                    st.bar_chart(payment_methods.set_index("payment_method"))
     
                     monthly_revenue = pd.read_sql("""
                         SELECT TO_CHAR(payment_date, 'YYYY-MM') AS pay_month, SUM(amount) AS total_revenue
