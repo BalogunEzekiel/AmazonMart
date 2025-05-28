@@ -42,7 +42,7 @@ def convert_df_to_excel(df):
 # --- Streamlit UI ---
 st.title("📦 AmazonMart Order Management")
 
-menu = ["View Products", "Place Order", "Order History", "Add Product/Customer", "Track Orders"]
+menu = ["View Products", "Place Order", "Order History", "Track Orders", "Admin Panel"]
 choice = st.sidebar.selectbox("Navigation", menu)
 
 # --- View Products ---
