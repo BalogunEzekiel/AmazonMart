@@ -98,8 +98,6 @@ if st.button("Place Order"):
             st.error(f"Error placing order: {e}")
     else:
         st.warning("Please select products and quantities.")
-    except Exception as e:
-        st.error(f"Error placing order: {e}")
 
 elif choice == "Order History":
     st.subheader("📜 Order History")
