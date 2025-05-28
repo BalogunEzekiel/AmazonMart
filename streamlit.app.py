@@ -120,7 +120,6 @@ elif choice == "Order History":
         excel_data = convert_df_to_excel(df)
 
         st.download_button("Download CSV", csv, "order_history.csv", "text/csv")
-        st.download_button("Download Excel", excel_data, "order_history.xlsx")
 
     except Exception as e:
         st.error(f"❌ Error fetching order history: {e}")
