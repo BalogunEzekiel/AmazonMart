@@ -78,11 +78,12 @@ elif choice == "Place Order":
                 qty = st.number_input(f"Quantity for {prod}", min_value=1, step=1, key=prod)
                 quantities.append(qty)
 
+        # ✅ Button logic should be outside the `try` block
         if st.button("Place Order"):
             if selected_products and quantities:
                 customer_id = customer_map[customer_choice]
                 product_ids = [product_map[p] for p in selected_products]
-        
+
                 try:
                     with engine.begin() as conn:
                         conn.execute(
@@ -94,10 +95,12 @@ elif choice == "Place Order":
                             }
                         )
                     st.success("Order placed successfully!")
-                else:
-                    st.warning("Please select products and quantities.")
+                except Exception as e:
+                    st.error(f"Error placing order: {e}")
+            else:
+                st.warning("Please select products and quantities.")
     except Exception as e:
-        st.error(f"Error placing order: {e}")
+        st.error(f"Error loading customer/product data: {e}")
         
 elif choice == "Order History":
     st.subheader("📜 Order History")
