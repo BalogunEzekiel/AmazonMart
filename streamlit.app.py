@@ -61,7 +61,6 @@ if choice == "View Products":
         excel_data = convert_df_to_excel(df)
 
         st.download_button("Download CSV", csv, "products.csv", "text/csv")
-        st.download_button("Download Excel", excel_data, "order_history.xlsx")
 
     except Exception as e:
         st.error(f"Error loading products: {e}")
