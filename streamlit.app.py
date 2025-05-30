@@ -154,7 +154,7 @@ elif choice == "Admin Panel":
     # --- Add Product ---
     with tab1:
         st.text("Enter new product details")
-        product_name = st.text_input("name", key="product_name")
+        name = st.text_input("product_name", key="product_name")
         category = st.text_input("category", key="product_category")
         price = st.number_input("price", min_value=0.0, step=0.01, key="product_price")
         stock_quantity = st.number_input("stock_quantity", min_value=0, step=1, key="product_stock")
