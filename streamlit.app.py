@@ -148,35 +148,73 @@ elif choice == "Track Orders":
 # --- Admin Panel ---
 elif choice == "Admin Panel":
     st.subheader("👨‍💼 Admin Panel")
-    # Tabs for Admin Panel
     tab1, tab2, tab3 = st.tabs(["Add Product", "Add Customer", "Dashboard"])
 
-    # --- Add Product ---
+# --- Add Product Tab ---
     with tab1:
-        st.text("Enter new product details")
-        name = st.text_input("product_name", key="product_name")
-        category = st.text_input("category", key="product_category")
-        price = st.number_input("price", min_value=0.0, step=0.01, key="product_price")
-        stock_quantity = st.number_input("stock_quantity", min_value=0, step=1, key="product_stock")
-       
-        if st.button("Add Product"):
-            try:
-                with engine.begin() as conn:
-                    conn.execute(
-                        text("INSERT INTO products (name, category, price, stock_quantity) VALUES (:name, :category, :price, :stock_quantity)"),
-                        {"name": name, "category": category, "price": price, "stock_quantity": stock_quantity}
-                    )
-                st.success("✅ Product added!")
-            except Exception as e:
-                st.error(f"❌ Error adding product: {e}")
+        st.markdown("### ➕ Add Product")
+        mode = st.radio("Select Mode", ["New Product", "Existing Product"])
 
-        # Display all products after insertion
         try:
             with engine.connect() as conn:
-                products_df = pd.read_sql(text("SELECT * FROM products ORDER BY product_id DESC"), conn)
-            st.dataframe(products_df)
+                categories_df = pd.read_sql("SELECT DISTINCT category FROM products", conn)
+                product_list_df = pd.read_sql("SELECT * FROM products ORDER BY name", conn)
         except Exception as e:
-            st.error(f"❌ Error loading products: {e}")
+            st.error(f"Error loading data: {e}")
+
+        if mode == "New Product":
+            name = st.text_input("Product Name")
+            category = st.selectbox("Category", categories_df['category'].unique())
+            price = st.number_input("Price", min_value=0.0, step=0.01)
+            quantity = st.number_input("Stock Quantity", min_value=0, step=1)
+
+            if st.button("Add New Product"):
+                if name and category:
+                    try:
+                        with engine.begin() as conn:
+                            conn.execute(
+                                text("INSERT INTO products (name, category, price, stock_quantity) VALUES (:name, :category, :price, :quantity)"),
+                                {"name": name, "category": category, "price": price, "quantity": quantity}
+                            )
+                        st.success("✅ New product added!")
+                    except Exception as e:
+                        st.error(f"Error adding product: {e}")
+                else:
+                    st.warning("Please fill all required fields.")
+
+        else:  # Existing Product
+            existing_product = st.selectbox("Select Existing Product", product_list_df['name'])
+            selected = product_list_df[product_list_df['name'] == existing_product].iloc[0]
+            st.text_input("Category", value=selected['category'], disabled=True)
+            price = st.number_input("Price", min_value=0.0, step=0.01, value=float(selected['price']))
+            quantity = st.number_input("Add Quantity", min_value=0, step=1)
+
+            if st.button("Update Existing Product"):
+                try:
+                    with engine.begin() as conn:
+                        if price == float(selected['price']):
+                            # Same price, just update quantity
+                            conn.execute(
+                                text("UPDATE products SET stock_quantity = stock_quantity + :quantity WHERE product_id = :pid"),
+                                {"quantity": quantity, "pid": selected['product_id']}
+                            )
+                        else:
+                            # New product ID since price changed
+                            conn.execute(
+                                text("INSERT INTO products (name, category, price, stock_quantity) VALUES (:name, :category, :price, :quantity)"),
+                                {"name": selected['name'], "category": selected['category'], "price": price, "quantity": quantity}
+                            )
+                    st.success("Product updated successfully.")
+                except Exception as e:
+                    st.error(f"Error updating product: {e}")
+
+        # Show current products
+        try:
+            with engine.connect() as conn:
+                df = pd.read_sql("SELECT * FROM products ORDER BY product_id DESC", conn)
+                st.dataframe(df)
+        except Exception as e:
+            st.error(f"Error loading products: {e}")
 
     # --- Add Customer ---
     with tab2:
