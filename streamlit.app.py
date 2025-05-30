@@ -4,7 +4,8 @@ from sqlalchemy import create_engine, text
 from urllib.parse import quote_plus
 from io import BytesIO
 import datetime
-
+import numpy as np
+]
 # --- Database Connection ---
 @st.cache_resource
 def get_engine():
@@ -196,13 +197,21 @@ elif choice == "Admin Panel":
                             # Same price, just update quantity
                             conn.execute(
                                 text("UPDATE products SET stock_quantity = stock_quantity + :quantity WHERE product_id = :pid"),
-                                {"quantity": quantity, "pid": selected['product_id']}
+                                {
+                                    "quantity": int(quantity),  # also cast quantity just in case
+                                    "pid": int(selected['product_id'])  # fix here
+                                }
                             )
                         else:
                             # New product ID since price changed
                             conn.execute(
                                 text("INSERT INTO products (name, category, price, stock_quantity) VALUES (:name, :category, :price, :quantity)"),
-                                {"name": selected['name'], "category": selected['category'], "price": price, "quantity": quantity}
+                                {
+                                    "name": selected['name'],
+                                    "category": selected['category'],
+                                    "price": price,
+                                    "quantity": int(quantity)  # ensure it's Python int
+                                }
                             )
                     st.success("Product updated successfully.")
                 except Exception as e:
