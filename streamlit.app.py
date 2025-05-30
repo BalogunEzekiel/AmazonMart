@@ -5,7 +5,7 @@ from urllib.parse import quote_plus
 from io import BytesIO
 import datetime
 import numpy as np
-]
+
 # --- Database Connection ---
 @st.cache_resource
 def get_engine():
