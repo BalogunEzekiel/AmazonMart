@@ -163,15 +163,18 @@ elif choice == "Admin Panel":
                 product_list_df = pd.read_sql("SELECT * FROM products ORDER BY name", conn)
         except Exception as e:
             st.error(f"Error loading data: {e}")
+            categories_df = pd.DataFrame({"category": []})
+            product_list_df = pd.DataFrame(columns=["name", "price", "stock_quantity", "product_id", "category"])
     
         if mode == "New Product":
-            # Form fields
-            name = st.text_input("Product Name")
-            category = st.selectbox("Category", categories_df['category'].unique())
-            price = st.number_input("Price", min_value=0.0, step=0.01)
-            quantity = st.number_input("Stock Quantity", min_value=0, step=1)
+            with st.form(key="new_product_form", clear_on_submit=True):
+                name = st.text_input("Product Name", key="new_name")
+                category = st.selectbox("Category", categories_df['category'].unique(), key="new_category")
+                price = st.number_input("Price", min_value=0.0, step=0.01, key="new_price")
+                quantity = st.number_input("Stock Quantity", min_value=0, step=1, key="new_quantity")
+                submit = st.form_submit_button("Add New Product")
     
-            if st.button("Add New Product"):
+            if submit:
                 if name and category:
                     try:
                         with engine.begin() as conn:
@@ -194,31 +197,35 @@ elif choice == "Admin Panel":
                     st.warning("Please fill all required fields.")
     
         else:  # Existing Product
-            existing_product = st.selectbox("Select Existing Product", product_list_df['name'])
-            selected = product_list_df[product_list_df['name'] == existing_product].iloc[0]
-            st.text_input("Category", value=selected['category'], disabled=True)
-            price = st.number_input("Price", min_value=0.0, step=0.01, value=float(selected['price']))
-            quantity = st.number_input("Add Quantity", min_value=0, step=1)
+            existing_product = st.selectbox("Select Existing Product", product_list_df['name'], key="existing_product")
+            if not product_list_df.empty:
+                selected = product_list_df[product_list_df['name'] == existing_product].iloc[0]
     
-            if st.button("Update Existing Product"):
-                try:
-                    with engine.begin() as conn:
-                        conn.execute(
-                            text("""
-                                UPDATE products 
-                                SET price = :price,
-                                    stock_quantity = stock_quantity + :quantity 
-                                WHERE product_id = :pid
-                            """),
-                            {
-                                "price": float(price),
-                                "quantity": int(quantity),
-                                "pid": int(selected['product_id'])
-                            }
-                        )
-                    st.success("✅ Product updated successfully.")
-                except Exception as e:
-                    st.error(f"Error updating product: {e}")
+                with st.form(key="update_product_form", clear_on_submit=True):
+                    st.text_input("Category", value=selected['category'], disabled=True)
+                    price = st.number_input("Price", min_value=0.0, step=0.01, value=float(selected['price']), key="update_price")
+                    quantity = st.number_input("Add Quantity", min_value=0, step=1, key="update_quantity")
+                    update_submit = st.form_submit_button("Update Existing Product")
+    
+                if update_submit:
+                    try:
+                        with engine.begin() as conn:
+                            conn.execute(
+                                text("""
+                                    UPDATE products 
+                                    SET price = :price,
+                                        stock_quantity = stock_quantity + :quantity 
+                                    WHERE product_id = :pid
+                                """),
+                                {
+                                    "price": float(price),
+                                    "quantity": int(quantity),
+                                    "pid": int(selected['product_id'])
+                                }
+                            )
+                        st.success("✅ Product updated successfully.")
+                    except Exception as e:
+                        st.error(f"Error updating product: {e}")
     
         # Show current products
         try:
@@ -228,45 +235,55 @@ elif choice == "Admin Panel":
                 st.dataframe(df)
         except Exception as e:
             st.error(f"Error loading products: {e}")
-
-    # --- Add Customer ---
+    
+    
+    # ---------------- TAB 2: CUSTOMER ----------------
     with tab2:
-        st.text("Enter new customer details")
-        customer_name = st.text_input("name", key="customer_name")  # Changed variable name too
-        email = st.text_input("email", key="customer_email")
-        city = st.text_input("city", key="customer_city")
-        country = st.text_input("country", key="customer_country")
-        registration_date = st.date_input("registration_date", value=datetime.date.today(), key="customer_reg_date")
-
-        if st.button("Add Customer"):
-            try:
-                with engine.begin() as conn:
-                    conn.execute(
-                        text("INSERT INTO customers (name, email, city, country, registration_date) VALUES (:name, :email, :city, :country, :registration_date)"),
-                        {
-                            "name": cust_name,
-                            "email": email,
-                            "city": city,
-                            "country": country,
-                            "registration_date": registration_date
-                        }
-                    )
-                st.success("✅ Customer added!")
-            except Exception as e:
-                st.error(f"❌ Error adding customer: {e}")
-
-        # Display all customers after insertion
+        st.markdown("### 🧍 Add New Customer")
+    
+        with st.form("add_customer_form", clear_on_submit=True):
+            customer_name = st.text_input("Customer Name", key="customer_name")
+            email = st.text_input("Email", key="customer_email")
+            city = st.text_input("City", key="customer_city")
+            country = st.text_input("Country", key="customer_country")
+            registration_date = st.date_input("Registration Date", value=datetime.date.today(), key="customer_reg_date")
+            add_cust_submit = st.form_submit_button("Add Customer")
+    
+        if add_cust_submit:
+            if customer_name and email and city and country:
+                try:
+                    with engine.begin() as conn:
+                        conn.execute(
+                            text("""
+                                INSERT INTO customers (name, email, city, country, registration_date)
+                                VALUES (:name, :email, :city, :country, :registration_date)
+                            """),
+                            {
+                                "name": customer_name,
+                                "email": email,
+                                "city": city,
+                                "country": country,
+                                "registration_date": registration_date
+                            }
+                        )
+                    st.success("✅ Customer added!")
+                except Exception as e:
+                    st.error(f"❌ Error adding customer: {e}")
+            else:
+                st.warning("Please fill all required fields.")
+    
+        # Show all customers
         try:
             with engine.connect() as conn:
                 customers_df = pd.read_sql(text("SELECT * FROM customers ORDER BY customer_id DESC"), conn)
+            st.markdown("### 📋 Current Customers")
             st.dataframe(customers_df)
         except Exception as e:
             st.error(f"❌ Error loading customers: {e}")
 
     # --- Placeholder Dashboard tab ---
-
     with tab3:
-        st.title("📊 Admin Dashboard")
+        st.title("📊 Data-Driven Insights")
 
         # Expandable Insight Sections
         with st.expander("👥 Customer Insights", expanded=False):
