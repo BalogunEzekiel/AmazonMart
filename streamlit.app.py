@@ -193,26 +193,24 @@ elif choice == "Admin Panel":
             if st.button("Update Existing Product"):
                 try:
                     with engine.begin() as conn:
-                        if price == float(selected['price']):
-                            # Same price, just update quantity
-                            conn.execute(
-                                text("UPDATE products SET stock_quantity = stock_quantity + :quantity WHERE product_id = :pid"),
-                                {
-                                    "quantity": int(quantity),  # also cast quantity just in case
-                                    "pid": int(selected['product_id'])  # fix here
-                                }
-                            )
-                        else:
-                            # New product ID since price changed
-                            conn.execute(
-                                text("INSERT INTO products (name, category, price, stock_quantity) VALUES (:name, :category, :price, :quantity)"),
-                                {
-                                    "name": selected['name'],
-                                    "category": selected['category'],
-                                    "price": price,
-                                    "quantity": int(quantity)  # ensure it's Python int
-                                }
-                            )
+                        # Always update price and add to stock_quantity for the same product_id
+                        conn.execute(
+                            text("""
+                                UPDATE products 
+                                SET price = :price,
+                                    stock_quantity = stock_quantity + :quantity 
+                                WHERE product_id = :pid
+                            """),
+                            {
+                                "price": float(price),
+                                "quantity": int(quantity),
+                                "pid": int(selected['product_id'])
+                            }
+                        )
+        st.success("✅ Product updated successfully.")
+    except Exception as e:
+        st.error(f"Error updating product: {e}")
+
                     st.success("Product updated successfully.")
                 except Exception as e:
                     st.error(f"Error updating product: {e}")
