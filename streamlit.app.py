@@ -284,49 +284,49 @@ elif choice == "Admin Panel":
     # --- Placeholder Dashboard tab ---
     with tab3:
         st.markdown("### 📊 Data-Driven Insights")
-
+    
         # Expandable Insight Sections
         with st.expander("### 👥 Customer Insights", expanded=False):
             try:
                 with engine.connect() as conn:
                     total_customers = pd.read_sql(
                         "SELECT COUNT(DISTINCT customer_id) AS total_customers FROM customers", conn)
-                st.markdown(f"#### Total Customers: {total_customers.at[0, 'total_customers']}")
-            except Exception as e:
-                st.error(f"Error fetching customer insights: {e}")
-  
-# 🔹 Visual Divider
-st.markdown("---")
-
-by_country = pd.read_sql(
-    """
-    SELECT country, COUNT(customer_id) AS num_customers
-    FROM customers
-    GROUP BY country
-    ORDER BY num_customers DESC
-    """,
-    conn
-)
-
-st.write("### 🏙️ Customers by Country")
-st.bar_chart(by_country.set_index("country"))
-
-# 🔹 Visual Divider
-st.markdown("---")
-
-                    by_city = pd.read_sql("""
+                    st.markdown(f"### Total Customers: {total_customers.at[0, 'total_customers']}")
+    
+                    # 🔹 Visual Divider
+                    st.markdown("---")
+    
+                    by_country = pd.read_sql(
+                        """
+                        SELECT country, COUNT(customer_id) AS num_customers
+                        FROM customers
+                        GROUP BY country
+                        ORDER BY num_customers DESC
+                        """,
+                        conn
+                    )
+                    st.write("### 🏙️ Customers by Country")
+                    st.bar_chart(by_country.set_index("country"))
+    
+                    # 🔹 Visual Divider
+                    st.markdown("---")
+    
+                    by_city = pd.read_sql(
+                        """
                         SELECT city, country, COUNT(customer_id) AS num_customers
                         FROM customers
                         GROUP BY city, country
                         ORDER BY num_customers DESC
                         LIMIT 10
-                    """, conn)
+                        """,
+                        conn
+                    )
                     st.write("### 🏙️ Top 10 Cities by Customers")
                     st.dataframe(by_city)
-
-# 🔹 Visual Divider
-st.markdown("---")
-
+    
+                    # 🔹 Visual Divider
+                    st.markdown("---")
+    
                     top_spenders = pd.read_sql("""
                         SELECT
                             c.customer_id,
@@ -343,6 +343,9 @@ st.markdown("---")
                     st.write("### 💰 Top 10 Customers by Spending")
                     st.dataframe(top_spenders)
     
+                    # 🔹 Visual Divider
+                    st.markdown("---")
+    
                     monthly_regs = pd.read_sql("""
                         SELECT
                             TO_CHAR(registration_date, 'YYYY-MM') AS registration_month,
@@ -353,6 +356,9 @@ st.markdown("---")
                     """, conn)
                     st.write("### 📅 Monthly Customer Registrations")
                     st.line_chart(monthly_regs.set_index("registration_month"))
+    
+                    # 🔹 Visual Divider
+                    st.markdown("---")
     
                     yearly_regs = pd.read_sql("""
                         SELECT
@@ -368,7 +374,7 @@ st.markdown("---")
             except Exception as e:
                 st.error(f"❌ Error loading Customer Insights: {e}")
     
-        with st.expander("📦 Orders Analysis", expanded=False):
+        with st.expander("#### 📦 Orders Analysis", expanded=False):
             try:
                 with engine.connect() as conn:
                     order_status = pd.read_sql("""
@@ -380,6 +386,9 @@ st.markdown("---")
                     st.write("### 📦 Orders by Status")
                     st.bar_chart(order_status.set_index("status"))
     
+                    # 🔹 Visual Divider
+                    st.markdown("---")
+    
                     orders_by_month = pd.read_sql("""
                         SELECT TO_CHAR(order_date, 'YYYY-MM') AS order_month, COUNT(order_id) AS num_orders
                         FROM orders
@@ -388,6 +397,9 @@ st.markdown("---")
                     """, conn)
                     st.write("### 📅 Monthly Orders")
                     st.line_chart(orders_by_month.set_index("order_month"))
+    
+                    # 🔹 Visual Divider
+                    st.markdown("---")
     
                     top_customers = pd.read_sql("""
                         SELECT c.name, COUNT(o.order_id) AS total_orders
@@ -403,7 +415,7 @@ st.markdown("---")
             except Exception as e:
                 st.error(f"❌ Error loading Orders Analysis: {e}")
     
-        with st.expander("🛍️ Product Analysis", expanded=False):
+        with st.expander("#### 🛍️ Product Analysis", expanded=False):
             try:
                 with engine.connect() as conn:
                     top_products = pd.read_sql("""
@@ -416,6 +428,9 @@ st.markdown("---")
                     """, conn)
                     st.write("### 🛍️ Top 10 Best-Selling Products")
                     st.dataframe(top_products)
+    
+                    # 🔹 Visual Divider
+                    st.markdown("---")
     
                     category_sales = pd.read_sql("""
                         SELECT category, SUM(oi.quantity) AS total_quantity
@@ -430,7 +445,7 @@ st.markdown("---")
             except Exception as e:
                 st.error(f"❌ Error loading Product Analysis: {e}")
     
-        with st.expander("💳 Payment Insights", expanded=False):
+        with st.expander("#### 💳 Payment Insights", expanded=False):
             try:
                 with engine.connect() as conn:
                     payment_methods = pd.read_sql("""
@@ -441,6 +456,9 @@ st.markdown("---")
                     """, conn)
                     st.write("### 💳 Payment Methods Distribution")
                     st.bar_chart(payment_methods.set_index("payment_method"))
+    
+                    # 🔹 Visual Divider
+                    st.markdown("---")
     
                     monthly_revenue = pd.read_sql("""
                         SELECT TO_CHAR(payment_date, 'YYYY-MM') AS pay_month, SUM(amount) AS total_revenue
