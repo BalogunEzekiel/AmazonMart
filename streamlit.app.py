@@ -291,7 +291,7 @@ elif choice == "Admin Panel":
                 with engine.connect() as conn:
                     total_customers = pd.read_sql(
                         "SELECT COUNT(DISTINCT customer_id) AS total_customers FROM customers", conn)
-                    st.markdown("**Total Customers:** {total_customers.at[0, 'total_customers']}")
+                    st.markdown("Total Customers: {total_customers.at[0, 'total_customers']}")
     
                     # 🔹 Visual Divider
                     st.markdown("---")
