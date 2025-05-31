@@ -298,14 +298,18 @@ elif choice == "Admin Panel":
 # 🔹 Visual Divider
 st.markdown("---")
 
-                    by_country = pd.read_sql("""
-                        SELECT country, COUNT(customer_id) AS num_customers
-                        FROM customers
-                        GROUP BY country
-                        ORDER BY num_customers DESC
-                    """, conn)
-                    st.write("### 🏙️ Customers by Country")
-                    st.bar_chart(by_country.set_index("country"))
+by_country = pd.read_sql(
+    """
+    SELECT country, COUNT(customer_id) AS num_customers
+    FROM customers
+    GROUP BY country
+    ORDER BY num_customers DESC
+    """,
+    conn
+)
+
+st.write("### 🏙️ Customers by Country")
+st.bar_chart(by_country.set_index("country"))
 
 # 🔹 Visual Divider
 st.markdown("---")
