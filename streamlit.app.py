@@ -286,21 +286,30 @@ elif choice == "Admin Panel":
         st.markdown("### 📊 Data-Driven Insights")
 
         # Expandable Insight Sections
-        with st.expander("👥 Customer Insights", expanded=False):
-            try:
-                with engine.connect() as conn:
-                    total_customers = pd.read_sql(
-                        "SELECT COUNT(DISTINCT customer_id) AS total_customers FROM customers", conn)
-                    st.metric("Total Customers", total_customers['total_customers'][0])
-    
+        with st.expander("### 👥 Customer Insights", expanded=False):
+    try:
+        with engine.connect() as conn:
+            total_customers = pd.read_sql(
+                "SELECT COUNT(DISTINCT customer_id) AS total_customers FROM customers", conn)
+        st.markdown(f"#### Total Customers: {total_customers.at[0, 'total_customers']}")
+    except Exception as e:
+        st.error(f"Error fetching customer insights: {e}")
+  
+# 🔹 Visual Divider
+st.markdown("---")
+
                     by_country = pd.read_sql("""
                         SELECT country, COUNT(customer_id) AS num_customers
                         FROM customers
                         GROUP BY country
                         ORDER BY num_customers DESC
                     """, conn)
+                    st.write("### 🏙️ Customers by Country")
                     st.bar_chart(by_country.set_index("country"))
-    
+
+# 🔹 Visual Divider
+st.markdown("---")
+
                     by_city = pd.read_sql("""
                         SELECT city, country, COUNT(customer_id) AS num_customers
                         FROM customers
@@ -310,7 +319,10 @@ elif choice == "Admin Panel":
                     """, conn)
                     st.write("### 🏙️ Top 10 Cities by Customers")
                     st.dataframe(by_city)
-    
+
+# 🔹 Visual Divider
+st.markdown("---")
+
                     top_spenders = pd.read_sql("""
                         SELECT
                             c.customer_id,
