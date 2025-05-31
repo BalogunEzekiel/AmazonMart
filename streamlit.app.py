@@ -287,13 +287,13 @@ elif choice == "Admin Panel":
 
         # Expandable Insight Sections
         with st.expander("### 👥 Customer Insights", expanded=False):
-    try:
-        with engine.connect() as conn:
-            total_customers = pd.read_sql(
-                "SELECT COUNT(DISTINCT customer_id) AS total_customers FROM customers", conn)
-        st.markdown(f"#### Total Customers: {total_customers.at[0, 'total_customers']}")
-    except Exception as e:
-        st.error(f"Error fetching customer insights: {e}")
+            try:
+                with engine.connect() as conn:
+                    total_customers = pd.read_sql(
+                        "SELECT COUNT(DISTINCT customer_id) AS total_customers FROM customers", conn)
+                st.markdown(f"#### Total Customers: {total_customers.at[0, 'total_customers']}")
+            except Exception as e:
+                st.error(f"Error fetching customer insights: {e}")
   
 # 🔹 Visual Divider
 st.markdown("---")
